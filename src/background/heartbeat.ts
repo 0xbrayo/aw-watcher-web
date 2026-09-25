@@ -6,6 +6,7 @@ import { getBucketId, sendHeartbeat } from './client'
 import { getEnabled, getHeartbeatData, setHeartbeatData } from '../storage'
 import deepEqual from 'deep-equal'
 import * as punycode from 'punycode.js'
+import { stripHostnameFromTitle } from '../hostnameInTitle'
 
 function decodeURL(url: string): string {
   try {
@@ -29,6 +30,16 @@ function decodeURL(url: string): string {
   } catch (e) {
     console.error('Error decoding URL:', e)
     return url
+  }
+}
+
+// Drop the hostname the content script may have added to the page title, so
+// the recorded title is the page's own.
+function originalTitle(url: string, title: string): string {
+  try {
+    return stripHostnameFromTitle(title, new URL(url).hostname)
+  } catch {
+    return title
   }
 }
 
@@ -80,7 +91,7 @@ async function heartbeat(
   const { url, title, audible, incognito } = tab
   const data: IEvent['data'] = {
     url: decodeURL(url),
-    title,
+    title: originalTitle(url, title),
     audible: audible ?? false,
     incognito,
     tabCount: tabCount,

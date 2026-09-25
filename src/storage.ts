@@ -109,3 +109,23 @@ export const getApiKey = (): Promise<ApiKey | undefined> =>
     .then((data: StorageData) => data.apiKey as string | undefined)
 export const setApiKey = (apiKey: ApiKey) =>
   browser.storage.local.set({ apiKey })
+
+type HostnameInTitle = boolean
+export const getHostnameInTitle = (): Promise<HostnameInTitle> =>
+  browser.storage.local
+    .get('hostnameInTitle')
+    .then((_) => Boolean(_.hostnameInTitle))
+export const setHostnameInTitle = (hostnameInTitle: HostnameInTitle) =>
+  browser.storage.local.set({ hostnameInTitle })
+export const watchHostnameInTitle = (
+  cb: (hostnameInTitle: HostnameInTitle | undefined) => void | Promise<void>,
+) => watchKey('hostnameInTitle', cb)
+
+// Whether titles in open Chromium tabs may still carry the hostname, so we
+// know to clean them up after the setting is turned off.
+export const getHostnameInTitleApplied = (): Promise<boolean> =>
+  browser.storage.local
+    .get('hostnameInTitleApplied')
+    .then((_) => Boolean(_.hostnameInTitleApplied))
+export const setHostnameInTitleApplied = (hostnameInTitleApplied: boolean) =>
+  browser.storage.local.set({ hostnameInTitleApplied })
