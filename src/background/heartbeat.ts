@@ -6,7 +6,7 @@ import { getBucketId, sendHeartbeat } from './client'
 import { getEnabled, getHeartbeatData, setHeartbeatData } from '../storage'
 import deepEqual from 'deep-equal'
 import * as punycode from 'punycode.js'
-import { removeHostnameSuffixes } from '../hostnameInTitle'
+import { stripHostnameFromTitle } from '../hostnameInTitle'
 import { pageTitlesHaveHostname } from './hostnameInTitle'
 
 function decodeURL(url: string): string {
@@ -39,7 +39,7 @@ function decodeURL(url: string): string {
 async function originalTitle(url: string, title: string): Promise<string> {
   if (!(await pageTitlesHaveHostname())) return title
   try {
-    return removeHostnameSuffixes(title, new URL(url).hostname)
+    return stripHostnameFromTitle(title, new URL(url).hostname)
   } catch {
     return title
   }
